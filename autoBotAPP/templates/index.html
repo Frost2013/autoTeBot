@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Web App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script type="module">
+        // Инициализация Telegram Web App SDK
+        Telegram.WebApp.ready();
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Добро пожаловать в наше приложение!</h1>
+        <p>Это приложение работает прямо внутри Telegram.</p>
+        <button id="start-button">Начать!</button>
+    </div>
+
+    <script>
+        // Реагируем на кнопку
+        document.getElementById('start-button').onclick = function() {
+            Telegram.WebApp.sendData('User clicked start button');
+        }
+    </script>
+</body>
+</html>
