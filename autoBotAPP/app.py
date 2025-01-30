@@ -4,7 +4,7 @@ import hmac
 from flask import Flask, request, render_template, jsonify
 import cloudinary
 import cloudinary.uploader
-from telegram import Update, Bot
+from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
 import threading
 
@@ -13,9 +13,6 @@ app = Flask(__name__)
 # Настройка Telegram Bot
 BOT_TOKEN = "7991701834:AAHFmqgqi4xq9NCn50dnlZfsOJ4OiJlxEgo"  # Укажи токен бота
 
-# Создание объекта Application
-application = Application.builder().token(BOT_TOKEN).build()
-
 # Настройка Cloudinary
 cloudinary.config(
     cloud_name="dqrp0zgwp",
@@ -23,6 +20,7 @@ cloudinary.config(
     api_secret="nNB6l6ov7r8tRphA27AqHtgn9rQ"
 )
 
+# Инициализация Telegram-бота
 async def start(update: Update, context):
     """Начальная команда бота"""
     await update.message.reply_text("Добро пожаловать! Для подачи объявления используйте команду /addlisting.")
@@ -41,12 +39,20 @@ async def handle_message(update: Update, context):
     else:
         await update.message.reply_text("Пожалуйста, отправьте фото для вашего объявления.")
 
-# Добавление обработчиков команд
-application.add_handler(CommandHandler("start", start))
-application.add_handler(CommandHandler("addlisting", add_listing))
+# Функция для запуска Telegram-бота
+def run_telegram_bot():
+    """Запуск Telegram-бота с командой /start"""
+    application = Application.builder().token(BOT_TOKEN).build()
 
-# Обработка текста и фото
-application.add_handler(MessageHandler(filters.TEXT | filters.PHOTO, handle_message))
+    # Добавление обработчиков команд
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("addlisting", add_listing))
+
+    # Обработка текста и фото
+    application.add_handler(MessageHandler(filters.TEXT | filters.PHOTO, handle_message))
+
+    # Запуск Telegram-бота
+    application.run_polling()
 
 # Flask-обработчик
 @app.route("/")
@@ -62,8 +68,8 @@ def auth():
     return jsonify({"status": "error"}), 403
 
 @app.route("/add_listing", methods=["POST"])
-def add_listing():
-    """Обработка подачи объявления"""
+def add_listing_form():
+    """Обработка подачи объявления через форму"""
     brand = request.form["brand"]
     model = request.form["model"]
     price = request.form["price"]
@@ -80,10 +86,6 @@ def add_listing():
 # Запуск Flask-сервера в отдельном потоке
 def run_flask():
     app.run(debug=True, use_reloader=False)
-
-# Запуск Telegram-бота в асинхронном режиме
-def run_telegram_bot():
-    application.run_polling()
 
 if __name__ == "__main__":
     # Запуск Flask и Telegram-бота в отдельных потоках
