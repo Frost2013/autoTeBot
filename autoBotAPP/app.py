@@ -6,6 +6,7 @@ import cloudinary
 import cloudinary.uploader
 from telegram import Update, Bot
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
+import threading
 
 app = Flask(__name__)
 
@@ -36,7 +37,6 @@ async def handle_message(update: Update, context):
         # Если есть фото, отправляем на Cloudinary
         photo = update.message.photo[-1].get_file()
         photo_url = photo.file_path  # Получаем URL фото
-        
         await update.message.reply_text(f"Фото добавлено: {photo_url}")
     else:
         await update.message.reply_text("Пожалуйста, отправьте фото для вашего объявления.")
@@ -48,6 +48,7 @@ application.add_handler(CommandHandler("addlisting", add_listing))
 # Обработка текста и фото
 application.add_handler(MessageHandler(filters.TEXT | filters.PHOTO, handle_message))
 
+# Flask-обработчик
 @app.route("/")
 def home():
     return render_template("index.html")
@@ -76,7 +77,15 @@ def add_listing():
 
     return f"Объявление добавлено: {brand} {model}, {price} руб. Фото: {photo_url}"
 
-if __name__ == "__main__":
-    # Запуск Telegram-бота в отдельном потоке
+# Запуск Flask-сервера в отдельном потоке
+def run_flask():
+    app.run(debug=True, use_reloader=False)
+
+# Запуск Telegram-бота в асинхронном режиме
+def run_telegram_bot():
     application.run_polling()
-    app.run(debug=True)
+
+if __name__ == "__main__":
+    # Запуск Flask и Telegram-бота в отдельных потоках
+    threading.Thread(target=run_flask).start()
+    threading.Thread(target=run_telegram_bot).start()
