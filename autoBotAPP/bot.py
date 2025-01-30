@@ -8,7 +8,7 @@ bot = telegram.Bot(token=TOKEN)
 # Функция, которая будет отправлять ссылку на веб-приложение
 def send_welcome(chat_id):
     keyboard = [
-        [InlineKeyboardButton("Перейти в приложение", url="http://your-server-url.com")]  # Укажи свой URL сервера
+        [InlineKeyboardButton("Перейти в приложение", url="https://auto-te-bot.vercel.app/")]  # Укажи свой URL сервера
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     bot.send_message(chat_id, text="Нажми на кнопку, чтобы открыть приложение", reply_markup=reply_markup)
