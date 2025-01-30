@@ -1,4 +1,3 @@
-import os
 import hashlib
 import hmac
 from flask import Flask, request, render_template, jsonify
@@ -8,10 +7,6 @@ import cloudinary.uploader
 app = Flask(__name__)
 
 BOT_TOKEN = "7991701834:AAHFmqgqi4xq9NCn50dnlZfsOJ4OiJlxEgo"  # Укажи токен бота
-
-UPLOAD_FOLDER = "static/uploads"
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 # Настройка Cloudinary
 cloudinary.config(
@@ -62,3 +57,4 @@ def add_listing():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
