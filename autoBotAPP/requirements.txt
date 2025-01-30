@@ -1,3 +1,4 @@
 flask
 python-telegram-bot
 gunicorn
+echo "Flask\nWerkzeug" > requirements.txt
