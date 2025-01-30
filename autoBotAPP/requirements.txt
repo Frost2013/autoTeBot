@@ -1,3 +1,0 @@
-Flask
-cloudinary
-python-telegram-bot
