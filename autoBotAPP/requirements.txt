@@ -1,4 +1,0 @@
-Flask
-cloudinary
-python-telegram-bot
-python-telegram-bot==20.0
