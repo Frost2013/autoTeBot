@@ -1,12 +1,18 @@
+
 import hashlib
 import hmac
 from flask import Flask, request, render_template, jsonify
 import cloudinary
 import cloudinary.uploader
+from telegram import Update
+from telegram.ext import Updater, CommandHandler, CallbackContext
 
 app = Flask(__name__)
 
+# Настройка Telegram Bot
 BOT_TOKEN = "7991701834:AAHFmqgqi4xq9NCn50dnlZfsOJ4OiJlxEgo"  # Укажи токен бота
+updater = Updater(BOT_TOKEN, use_context=True)
+dispatcher = updater.dispatcher
 
 # Настройка Cloudinary
 cloudinary.config(
@@ -15,17 +21,31 @@ cloudinary.config(
     api_secret="nNB6l6ov7r8tRphA27AqHtgn9rQ"
 )
 
-def check_auth(data):
-    """Проверка подлинности Telegram-авторизации"""
-    secret = hashlib.sha256(BOT_TOKEN.encode()).digest()
-    data_check_string = "\n".join([f"{k}={v}" for k, v in sorted(data.items()) if k != "hash"])
-    h = hmac.new(secret, data_check_string.encode(), hashlib.sha256).hexdigest()
-    return h == data["hash"]
+def start(update: Update, context: CallbackContext):
+    """Начальная команда бота"""
+    update.message.reply_text("Добро пожаловать! Для подачи объявления используйте команду /addlisting.")
 
-def upload_to_cloudinary(file):
-    """Загружает файл в Cloudinary и возвращает URL"""
-    response = cloudinary.uploader.upload(file)
-    return response["secure_url"]
+def add_listing(update: Update, context: CallbackContext):
+    """Команда для добавления объявления через Telegram"""
+    update.message.reply_text("Пожалуйста, отправьте ваше объявление с фотографией.")
+
+def handle_message(update: Update, context: CallbackContext):
+    """Обработка сообщений (например, если пользователь отправит текст или фото)"""
+    if update.message.photo:
+        # Если есть фото, отправляем на Cloudinary
+        photo = update.message.photo[-1].get_file()
+        photo_url = photo.file_path  # Получаем URL фото
+        
+        update.message.reply_text(f"Фото добавлено: {photo_url}")
+    else:
+        update.message.reply_text("Пожалуйста, отправьте фото для вашего объявления.")
+
+# Добавление обработчиков команд
+dispatcher.add_handler(CommandHandler("start", start))
+dispatcher.add_handler(CommandHandler("addlisting", add_listing))
+
+# Обработка текста и фото
+dispatcher.add_handler(MessageHandler(Filters.text | Filters.photo, handle_message))
 
 @app.route("/")
 def home():
@@ -56,5 +76,6 @@ def add_listing():
     return f"Объявление добавлено: {brand} {model}, {price} руб. Фото: {photo_url}"
 
 if __name__ == "__main__":
+    # Запуск Telegram-бота в отдельном потоке
+    updater.start_polling()
     app.run(debug=True)
-
