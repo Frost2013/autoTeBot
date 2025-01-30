@@ -5,7 +5,7 @@ from flask import Flask, request, render_template, jsonify
 import cloudinary
 import cloudinary.uploader
 from telegram import Update
-from telegram.ext import Application, CommandHandler, MessageHandler, filters
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext
 import threading
 
 app = Flask(__name__)
@@ -21,15 +21,15 @@ cloudinary.config(
 )
 
 # Инициализация Telegram-бота
-async def start(update: Update, context):
-    """Начальная команда бота"""
+async def start(update: Update, context: CallbackContext):
+    """Команда /start"""
     await update.message.reply_text("Добро пожаловать! Для подачи объявления используйте команду /addlisting.")
 
-async def add_listing(update: Update, context):
+async def add_listing(update: Update, context: CallbackContext):
     """Команда для добавления объявления через Telegram"""
     await update.message.reply_text("Пожалуйста, отправьте ваше объявление с фотографией.")
 
-async def handle_message(update: Update, context):
+async def handle_message(update: Update, context: CallbackContext):
     """Обработка сообщений (например, если пользователь отправит текст или фото)"""
     if update.message.photo:
         # Если есть фото, отправляем на Cloudinary
