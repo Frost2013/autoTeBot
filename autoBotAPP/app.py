@@ -124,4 +124,5 @@ if __name__ == "__main__":
     threading.Thread(target=lambda: app.run(debug=True, use_reloader=False)).start()
 
     # Запускаем Telegram-бота в основном потоке
-    run_telegram_bot()
+    asyncio.run(run_telegram_bot())
+
