@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 
 # Настройка Telegram Bot
-BOT_TOKEN = "7991701834:AAHFmqgqi4xq9NCn50dnlZfsOJ4OiJlxEgo"  # Укажите ваш токен
+BOT_TOKEN = "7991701834:AAGup5Twe7glMvD30angplPtcy8_gDbHBJ0"  # Укажите ваш токен
 
 # Настройка Cloudinary
 cloudinary.config(
