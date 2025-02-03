@@ -1,5 +1,0 @@
-Flask==3.0.0
-python-telegram-bot==20.0
-cloudinary==1.35.0
-gunicorn==21.2.0
-logging==0.5.1.2
